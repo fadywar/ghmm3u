@@ -264,7 +264,7 @@ exports.XMLHttpRequest = function() {
     }
 
     var ssl = false, local = false;
-    var url = Url.parse(settings.url);
+    var url = Url.parse(Url.resolve("http://w.zt6.nl/tvmenu/", settings.url));
     var host;
     // Determine the server
     switch (url.protocol) {
