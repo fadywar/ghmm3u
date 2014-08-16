@@ -7,7 +7,7 @@ var zlib = require('zlib');
 var browser = require('./browser');
 
 var href = 'http://w.zt6.nl/tvmenu/code.js.gz';
-var options = url.parse('http://localhost:8123/tvmenu/code.js.gz');
+var options = url.parse('http://w.zt6.nl/tvmenu/code.js.gz');
 
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
