@@ -13,6 +13,13 @@ function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
+function contains(array, k) {
+  for(p in array)
+     if(array[p] === k)
+        return true;
+  return false;
+}
+
 var req = http.request(options, function(res) {
 	var buffers = [];
 	
@@ -29,18 +36,39 @@ var req = http.request(options, function(res) {
 				vm.runInNewContext(result, context);
 
 				var file = fs.createWriteStream("ghm.m3u8");
+				var tags = {};
 				file.write("#EXTM3U\n");
+				for (var tid in context.I.menu_tv.c) {
+					var tag = context.I.menu_tv.c[tid];
+					var name = tag.b.default;
+					if (context.I[tag.S] != undefined) {
+						var channels = [];
+						for (var channel in context.I[tag.S].c) {
+							channels.push(context.I[tag.S].c[channel].f);
+						}
+
+						tags[name] = channels;
+					}
+				}
 				for (var id in context.H) {
 					var channel = context.H[id];
 					if (channel.d[0] != undefined) {
+						var channelTags = [];
+						for (var tag in tags) {
+							if (contains(tags[tag], channel.k))
+								channelTags.push(tag);
+						}
+
 						for (var stream in channel.d) {
 							var name = channel.b.default;
 							if (channel.d[stream].b != undefined)
 								name = name + " " + channel.d[stream].b.default;
 							else if (channel.d[stream].N != undefined)
 								name = name + " HD";
-							
+
 							file.write("#EXTINF:"+channel.k+","+name+"\n");
+							file.write("#EXTTV:"+channelTags.join(",")+";\n");
+							
 							var stream = channel.d[stream].h;
 							if (endsWith(stream, ";rtpskip=yes"))
 								stream = "rtp" + stream.substring(4, stream.length-12);
